@@ -44,22 +44,31 @@ $('#token').keypress(function (e)
 
         // Montando a tabela
         var conteudo = '';
+        conteudo += '<thead><tr>';
+        var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
+        for (; i <= j; ++i) 
+        {            
+            var letra = String.fromCharCode(i);
+            conteudo += '<th>' +letra+ '</th>';   
+        }        
+        conteudo += '</tr></thead>';
         for (let h = 0; h < estados.length; h++) {
             conteudo += '<tr>';
             const linha = estados[h];
             var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
+            conteudo += '<td>q'+h+'</td>';
             for (; i <= j; ++i)
             {
                 var letra = String.fromCharCode(i);
                 if(typeof estados[h][letra] !== 'undefined') {
-                    conteudo += '<td>'+ estados[h][letra] +'</td>';
+                    conteudo += '<td>q'+ estados[h][letra] +'</td>';
                 } else {
                     conteudo += '<td>-</td>';
                 }
             }
             conteudo += '</tr>';
         }
-        $('#tabela').append(conteudo);
+        $('#tabela').html(conteudo);
      }
 });
 
