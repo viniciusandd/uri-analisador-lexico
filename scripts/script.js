@@ -1,63 +1,73 @@
 var alfabeto = [];
-
-$('#token').keypress(function (e) {
-    if (e.which == 13) {
+var estados = [[]];
+$('#token').keypress(function (e) 
+{
+    if (e.which == 13) 
+    {
         let elemento = $(this);
         let palavras = elemento.val().split(' ');
-        $.each(palavras, function (indexInArray, valueOfElement) {
-            alfabeto.push(valueOfElement);
+        $.each(palavras, function (index, token) 
+        {
+            alfabeto.push(token);
         });
         elemento.val('');
 
-        // Criando um array de estados
-        var estados = [];
-        for (var i=0; i<alfabeto.length; i++) {
-            var palavra = alfabeto[i];
-            for (var h=0; h<palavra.length; h++) {
-                if (i == 0) {
-                    estados.push(h);
-                } else {
-                    if (h == 0) {
-                        estados.push(h)
-                    } else {
-                        var ultima_posicao = estados[estados.length-1];
-                        if (ultima_posicao == 0) {
-                            ultima_posicao = estados[estados.length-2];
-                        }
-                        estados.push(ultima_posicao + 1);
-                    }
+        // Criando os estados        
+        var estado = 0;
+        for(var i=0; i<alfabeto.length; i++) 
+        {
+            let estado_atual = 0;
+            let palavra = alfabeto[i];
+            for(var j=0; j<palavra.length; j++) 
+            {
+                var letra = palavra[j];
+                if(typeof estados[estado_atual][letra] === 'undefined') 
+                {
+                    let proximo_estado = estado + 1;
+                    estados[estado_atual][letra] = proximo_estado;
+                    estados[proximo_estado] = [];
+                    estado = estado_atual = proximo_estado;
+                } 
+                else 
+                {
+                    estado_atual = estados[estado_atual][letra];
+                }
+    
+                if(j == palavra.length - 1) 
+                {
+                    estados[estado_atual]['final'] = true;
                 }
             }
-            estados.push(estados[estados.length-1] + 1);
         }
 
-        // Criando a gramatica
-        var gramatica = [];
-        for (var i=0; i<alfabeto.length; i++) {
-            var palavra = alfabeto[i];
-            for (var h=0; h<palavra.length; h++) {
-                gramatica.push(palavra[h]);
-            }
-            gramatica.push('&');
-        }
-        console.log(gramatica);        
+        console.log(estados.length);
 
-        // Criando o automato
-        var automato = [];
-        for (var i = 0; i<gramatica.length; i++) {
-            var letra = gramatica[i];            
-            if (typeof automato[letra] == 'undefined') {
-                automato[letra] = [];
+        // Montando a tabela
+        var conteudo = '';
+        for (let h = 0; h < estados.length; h++) {
+            conteudo += '<tr>';
+            const linha = estados[h];
+            var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
+            for (; i <= j; ++i)
+            {
+                var letra = String.fromCharCode(i);
+                if(typeof estados[h][letra] !== 'undefined') {
+                    conteudo += '<td>'+ estados[h][letra] +'</td>';
+                } else {
+                    conteudo += '<td>-</td>';
+                }
             }
-            automato[letra][estados[i]] = estados[i+1]
+            conteudo += '</tr>';
         }
-        console.log(automato);
-    }
+        $('#tabela').append(conteudo);
+     }
 });
 
-function gerar_letras() {
-    var i = 'a'.charCodeAt(0), j = 'z'.charCodeAt(0);
-    for (; i <= j; ++i) {
+function gerar_letras() 
+{
+    var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
+    for (; i <= j; ++i) 
+    {
         var letra = String.fromCharCode(i);
-    }    
+    }
 }
