@@ -54,7 +54,7 @@ function identificar_estados_do_automato()
     }
 }
 
-function desenhar_tabela() {
+function desenhar_tabela(estado_atual=null, letra_atual=null) {
     var conteudo = '';
     conteudo += '<thead><tr>';
     conteudo += '<td>-</td>';
@@ -75,7 +75,9 @@ function desenhar_tabela() {
         {
             var letra = String.fromCharCode(i);
             if(typeof estados[h][letra] !== 'undefined') {
-                conteudo += '<td>q'+ estados[h][letra] +'</td>';
+                let classe = 'nao-destacar';
+                if (h == estado_atual && letra == letra_atual) classe = 'destacar';
+                conteudo += '<td class="'+classe+'">q'+ estados[h][letra] +'</td>';
             } else {
                 conteudo += '<td>-</td>';
             }
@@ -85,9 +87,11 @@ function desenhar_tabela() {
     $('#tabela').html(conteudo);
 }
 
-$('#palavra').keypress(function (e) 
+$('#palavra').keyup(function (e) 
 {
-    var estado = $(this).val().length;
-    var letra = String.fromCharCode(e.which);
-    var proximo_estado = estados[estado][letra];    
+    // Essa parada aqui tem que ser uma máquina de estados
+    var estado = $(this).val().length-1;
+    var letra = $(this).val()[$(this).val().length-1];
+    console.log(letra);
+    desenhar_tabela(estado, letra.toLowerCase());
 });
