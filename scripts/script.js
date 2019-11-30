@@ -52,9 +52,10 @@ function identificar_estados_do_automato()
             }
         }
     }
+    console.log(estados);
 }
 
-function desenhar_tabela(estado_atual=null, letra_atual=null) {
+function desenhar_tabela(letra_atual=null) {
     var conteudo = '';
     conteudo += '<thead><tr>';
     conteudo += '<td>-</td>';
@@ -67,17 +68,19 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
     conteudo += '</tr></thead>';
     for (let h = 0; h < estados.length; h++) 
     {
+        var eh_inicial = h == 0 ? '->' : '';
+        var eh_final = estados[h]['final'] !== 'undefined' && estados[h]['final'] == true ? '*' : '';
+
         conteudo += '<tr>';
         const linha = estados[h];
+        console.log(linha);
         var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
-        conteudo += '<td><strong>q'+h+'</strong></td>';
+        conteudo += '<td>'+eh_final+eh_inicial+'<strong>q'+h+'</strong></td>';
         for (; i <= j; ++i)
         {
             var letra = String.fromCharCode(i);
             if(typeof estados[h][letra] !== 'undefined') {
-                let classe = 'nao-destacar';
-                if (h == estado_atual && letra == letra_atual) classe = 'destacar';
-                conteudo += '<td class="'+classe+'">q'+ estados[h][letra] +'</td>';
+                conteudo += '<td>q'+ estados[h][letra] +'</td>';
             } else {
                 conteudo += '<td>-</td>';
             }
@@ -90,8 +93,7 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
 $('#palavra').keyup(function (e) 
 {
     // Essa parada aqui tem que ser uma máquina de estados
-    var estado = $(this).val().length-1;
     var letra = $(this).val()[$(this).val().length-1];
     console.log(letra);
-    desenhar_tabela(estado, letra.toLowerCase());
+    desenhar_tabela(letra.toLowerCase());
 });
