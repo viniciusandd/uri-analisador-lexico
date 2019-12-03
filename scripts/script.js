@@ -1,5 +1,6 @@
 var alfabeto = [];
 var estados = [[]];
+
 $('#token').keypress(function (e) 
 {
     if (e.which == 13) 
@@ -90,10 +91,28 @@ function desenhar_tabela(letra_atual=null) {
     $('#tabela').html(conteudo);
 }
 
+var g_proximo_estado = 0;
+var estados_percorridos = [];
 $('#palavra').keyup(function (e) 
-{
-    // Essa parada aqui tem que ser uma máquina de estados
+{    
     var letra = $(this).val()[$(this).val().length-1];
-    console.log(letra);
-    desenhar_tabela(letra.toLowerCase());
+    if (e.which >= 65 && e.which <= 90)
+    {        
+        estados_percorridos.push(g_proximo_estado);
+        g_proximo_estado = estados[g_proximo_estado][letra];
+        // sa
+        // prox -> 3
+        // [0,1,2]
+    }
+    else if (e.which == 8)
+    {
+        if (estados_percorridos.length > 0)
+        {
+            g_proximo_estado = estados_percorridos[estados_percorridos.length-1];
+        }
+        else
+        {
+            g_proximo_estado = 0;
+        }
+    }
 });
