@@ -1,5 +1,10 @@
-var alfabeto = [];
-var estados = [[]];
+var g_alfabeto = [];
+var g_estados = [[]];
+
+$(document).ready(function () {
+    $('#token').val('');
+    $('#palavra').val('');
+});
 
 $('#token').keypress(function (e) 
 {
@@ -18,7 +23,7 @@ $('#token').keypress(function (e)
 function criar_alfabeto(tokens) {
     $.each(tokens, function (index, token) 
     {
-        alfabeto.push(token);
+        g_alfabeto.push(token);
         $('#alfabeto').append(
             '<span class="badge badge-pill badge-primary palavras">'+token+'</span>'
         );
@@ -28,35 +33,34 @@ function criar_alfabeto(tokens) {
 function identificar_estados_do_automato()
 {
     var estado = 0;
-    for(var i=0; i<alfabeto.length; i++) 
+    for(var i=0; i<g_alfabeto.length; i++) 
     {
         let estado_atual = 0;
-        let palavra = alfabeto[i];
+        let palavra = g_alfabeto[i];
         for(var j=0; j<palavra.length; j++) 
         {
             var letra = palavra[j];
-            if(typeof estados[estado_atual][letra] === 'undefined') 
+            if(typeof g_estados[estado_atual][letra] === 'undefined') 
             {
                 let proximo_estado = estado + 1;
-                estados[estado_atual][letra] = proximo_estado;
-                estados[proximo_estado] = [];
+                g_estados[estado_atual][letra] = proximo_estado;
+                g_estados[proximo_estado] = [];
                 estado = estado_atual = proximo_estado;
             } 
             else 
             {
-                estado_atual = estados[estado_atual][letra];
+                estado_atual = g_estados[estado_atual][letra];
             }
 
             if(j == palavra.length - 1) 
             {
-                estados[estado_atual]['final'] = true;
+                g_estados[estado_atual]['final'] = true;
             }
         }
-    }
-    console.log(estados);
+    }    
 }
 
-function desenhar_tabela(letra_atual=null) {
+function desenhar_tabela(estado_atual=null, letra_atual=null) {
     var conteudo = '';
     conteudo += '<thead><tr>';
     conteudo += '<td>-</td>';
@@ -67,21 +71,25 @@ function desenhar_tabela(letra_atual=null) {
         conteudo += '<th>' +letra+ '</th>';   
     }        
     conteudo += '</tr></thead>';
-    for (let h = 0; h < estados.length; h++) 
+    for (let h = 0; h < g_estados.length; h++) 
     {
         var eh_inicial = h == 0 ? '->' : '';
-        var eh_final = estados[h]['final'] !== 'undefined' && estados[h]['final'] == true ? '*' : '';
+        var eh_final = g_estados[h]['final'] !== 'undefined' && g_estados[h]['final'] == true ? '*' : '';
 
         conteudo += '<tr>';
-        const linha = estados[h];
-        console.log(linha);
+        const linha = g_estados[h];
         var i = 'a'.charCodeAt(0); j = 'z'.charCodeAt(0);
         conteudo += '<td>'+eh_final+eh_inicial+'<strong>q'+h+'</strong></td>';
         for (; i <= j; ++i)
         {
             var letra = String.fromCharCode(i);
-            if(typeof estados[h][letra] !== 'undefined') {
-                conteudo += '<td>q'+ estados[h][letra] +'</td>';
+            
+            var classe = 'nao-destacar';
+            if (h == estado_atual && letra == letra_atual)
+                classe = 'destacar';
+
+            if(typeof g_estados[h][letra] !== 'undefined') {
+                conteudo += '<td class="'+classe+'">q'+ g_estados[h][letra] +'</td>';
             } else {
                 conteudo += '<td>-</td>';
             }
@@ -92,27 +100,60 @@ function desenhar_tabela(letra_atual=null) {
 }
 
 var g_proximo_estado = 0;
-var estados_percorridos = [];
+var g_estados_percorridos = [];
 $('#palavra').keyup(function (e) 
 {    
+    // Maquina de estados
     var letra = $(this).val()[$(this).val().length-1];
-    if (e.which >= 65 && e.which <= 90)
+    if (e.which >= 65 && e.which <= 90) // a - z
     {        
-        estados_percorridos.push(g_proximo_estado);
-        g_proximo_estado = estados[g_proximo_estado][letra];
-        // sa
-        // prox -> 3
-        // [0,1,2]
+        g_estados_percorridos.push(g_proximo_estado);
+        g_proximo_estado = g_estados[g_proximo_estado][letra];
     }
-    else if (e.which == 8)
+    else if (e.which == 8) //backspace
     {
-        if (estados_percorridos.length > 0)
+        if (g_estados_percorridos.length > 0)
         {
-            g_proximo_estado = estados_percorridos[estados_percorridos.length-1];
+            g_proximo_estado = g_estados_percorridos[g_estados_percorridos.length-1];
+            g_estados_percorridos.pop();
         }
         else
         {
             g_proximo_estado = 0;
         }
+    } else if (e.which == 32) //space
+    {
+        if (g_estados[g_proximo_estado]["final"])
+            bootbox.alert("O token é valido!");
+        else
+        bootbox.alert("O token é invalido!");
+
+        $('#palavra').val('');
+        reiniciar_variaveis();
+        // desenhar_tabela();
+        // return;
     }
+
+    desenhar_tabela(g_estados_percorridos[g_estados_percorridos.length-1], letra);
+
+    // console.log("Estado atual: " + g_estados_percorridos[g_estados_percorridos.length-1]);
+    // console.log("Letra: " + letra);    
+    // console.log("Próximo estado: " + g_proximo_estado);
+    // console.log("Estado final: " + g_estados[g_proximo_estado]["final"]);
+
+    mostrar_validade_do_token(g_estados[g_proximo_estado]["final"]);
 });
+
+function mostrar_validade_do_token(estado_final)
+{
+    if (estado_final)
+        $('#palavra').css("color", "green");    
+    else
+        $('#palavra').css("color", "red");
+}
+
+function reiniciar_variaveis()
+{
+    g_proximo_estado = 0;
+    g_estados_percorridos.length = 0;
+}
