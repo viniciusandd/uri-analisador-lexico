@@ -74,7 +74,7 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
     for (let h = 0; h < g_estados.length; h++) 
     {
         var eh_inicial = h == 0 ? '->' : '';
-        var eh_final = g_estados[h]['final'] !== 'undefined' && g_estados[h]['final'] == true ? '*' : '';
+        var eh_final = typeof(g_estados[h]['final']) !== 'undefined' ? '*' : '';
 
         conteudo += '<tr>';
         const linha = g_estados[h];
@@ -107,8 +107,8 @@ $('#palavra').keyup(function (e)
     var letra = $(this).val()[$(this).val().length-1];
     if (e.which >= 65 && e.which <= 90) // a - z
     {        
-        g_estados_percorridos.push(g_proximo_estado);
-        g_proximo_estado = g_estados[g_proximo_estado][letra];
+        g_estados_percorridos.push(g_proximo_estado);        
+        g_proximo_estado = typeof g_estados[g_proximo_estado][letra] !== "undefined" ? g_estados[g_proximo_estado][letra] : g_proximo_estado;
     }
     else if (e.which == 8) //backspace
     {
@@ -136,10 +136,10 @@ $('#palavra').keyup(function (e)
 
     desenhar_tabela(g_estados_percorridos[g_estados_percorridos.length-1], letra);
 
-    // console.log("Estado atual: " + g_estados_percorridos[g_estados_percorridos.length-1]);
-    // console.log("Letra: " + letra);    
-    // console.log("Próximo estado: " + g_proximo_estado);
-    // console.log("Estado final: " + g_estados[g_proximo_estado]["final"]);
+    console.log("Estado atual: " + g_estados_percorridos[g_estados_percorridos.length-1]);
+    console.log("Letra: " + letra);    
+    console.log("Próximo estado: " + g_proximo_estado);
+    console.log("Estado final: " + g_estados[g_proximo_estado]["final"]);
 
     mostrar_validade_do_token(g_estados[g_proximo_estado]["final"]);
 });
