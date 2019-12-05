@@ -15,12 +15,14 @@ $('#token').keypress(function (e)
         elemento.val('');
         
         criar_alfabeto(tokens);
+        g_estados = [[]];
         identificar_estados_do_automato();
         desenhar_tabela();
      }
 });
 
-function criar_alfabeto(tokens) {
+function criar_alfabeto(tokens) 
+{
     $.each(tokens, function (index, token) 
     {
         g_alfabeto.push(token);
@@ -31,7 +33,7 @@ function criar_alfabeto(tokens) {
 }
 
 function identificar_estados_do_automato()
-{
+{    
     var estado = 0;
     for(var i=0; i<g_alfabeto.length; i++) 
     {
@@ -68,13 +70,13 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
     for (; i <= j; ++i) 
     {            
         var letra = String.fromCharCode(i);
-        conteudo += '<th>' +letra+ '</th>';   
+        conteudo += '<th>' +letra+ '</th>';
     }        
     conteudo += '</tr></thead>';
     for (let h = 0; h < g_estados.length; h++) 
     {
         var eh_inicial = h == 0 ? '->' : '';
-        var eh_final = typeof(g_estados[h]['final']) !== 'undefined' ? '*' : '';
+        var eh_final = typeof g_estados[h]['final'] !== 'undefined' ? '*' : '';
 
         conteudo += '<tr>';
         const linha = g_estados[h];
@@ -101,16 +103,16 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
 
 var g_proximo_estado = 0;
 var g_estados_percorridos = [];
-$('#palavra').keyup(function (e) 
-{    
-    // Maquina de estados
-    var letra = $(this).val()[$(this).val().length-1];
-    if (e.which >= 65 && e.which <= 90) // a - z
-    {        
-        g_estados_percorridos.push(g_proximo_estado);        
-        g_proximo_estado = typeof g_estados[g_proximo_estado][letra] !== "undefined" ? g_estados[g_proximo_estado][letra] : g_proximo_estado;
-    }
-    else if (e.which == 8) //backspace
+function maquina_de_estados(elemento, backspace=false, space=false)
+{
+    var palavra = elemento.value;
+    var letra = palavra[palavra.length-1];
+    
+    console.log(letra);
+    console.log(backspace);
+    console.log(space);
+
+    if (backspace)
     {
         if (g_estados_percorridos.length > 0)
         {
@@ -121,28 +123,49 @@ $('#palavra').keyup(function (e)
         {
             g_proximo_estado = 0;
         }
-    } else if (e.which == 32) //space
+    }
+    else if (space)
     {
         if (g_estados[g_proximo_estado]["final"])
             bootbox.alert("O token é valido!");
         else
         bootbox.alert("O token é invalido!");
-
-        $('#palavra').val('');
         reiniciar_variaveis();
-        // desenhar_tabela();
-        // return;
+    }
+    else
+    {
+        g_estados_percorridos.push(g_proximo_estado);        
+        try {
+            g_proximo_estado = g_estados[g_proximo_estado][letra];
+        } catch (error) {
+            g_proximo_estado = -1;
+        }
     }
 
-    desenhar_tabela(g_estados_percorridos[g_estados_percorridos.length-1], letra);
+    var estado_atual = g_estados_percorridos[g_estados_percorridos.length-1];
+    var eh_final = false;
+    try {
+        eh_final = g_estados[g_proximo_estado]["final"];
+    } catch (error) {
+        eh_final = false;
+    }
 
-    console.log("Estado atual: " + g_estados_percorridos[g_estados_percorridos.length-1]);
-    console.log("Letra: " + letra);    
-    console.log("Próximo estado: " + g_proximo_estado);
-    console.log("Estado final: " + g_estados[g_proximo_estado]["final"]);
+    // console.log('estado atual: ' + estado_atual);
+    // console.log('prox estado: ' + g_proximo_estado);
+    // console.log('eh final: ' + eh_final);
 
-    mostrar_validade_do_token(g_estados[g_proximo_estado]["final"]);
-});
+    desenhar_tabela(estado_atual, letra);
+    mostrar_validade_do_token(eh_final);
+}
+
+document.getElementById('palavra').onkeyup = function() 
+{    
+    var key = event.keyCode || event.charCode;
+    if (key === 8)
+        maquina_de_estados(event.target, backspace=true);
+    if (key === 32)
+        maquina_de_estados(event.target, space=true);
+}
 
 function mostrar_validade_do_token(estado_final)
 {
