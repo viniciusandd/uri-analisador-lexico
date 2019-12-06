@@ -10,20 +10,32 @@
     <link rel="stylesheet" href="styles/style.css">    
 </head>
 <body>
-    <div class="container">
-        <!-- Título -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h3>Analisador Léxico</h3>                
-            </div>
+
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>    
         </div>
+        <a class="navbar-brand" href="#">Analisador Léxico</a>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="acoes"><a target="_blank" href="https://github.com/viniciusandd/uri-analisador-lexico"><i class="fa fa-github"></i>Projeto</a></li>
+                <li class="acoes"><a href="https://github.com/viniciusandd/uri-analisador-lexico/archive/master.zip"><i class="fa fa-download"></i>Download</a></li>
+            </ul>
+        </div>
+    </nav>  
+
+    <div class="container">
         <!-- Entradas -->
         <div id="entradas" class="row">
             <div class="col-md-6">
-                <input id="token" class="form-control" type="text" placeholder="Insira UM ou MAIS tokens e pressione ENTER para adicioná-los">
+                <input id="token" class="form-control" type="text" placeholder="Insira um ou mais tokens separados por espaço e pressione ENTER...">
             </div>
             <div class="col-md-6">
-                <input id="palavra" class="form-control" type="text" placeholder="Digite uma palavra e pressione SPACE para validá-la" onInput="maquina_de_estados(this);">
+                <input id="palavra" class="form-control" type="text" placeholder="Digite um token e pressione SPACE para validá-lo..." onInput="maquina_de_estados(this);">
             </div>
         </div>
         <!-- Palavras do alfabeto -->
@@ -51,5 +63,10 @@
     <script src="styles/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="scripts/bootbox/bootbox.min.js"></script>
     <script src="scripts/script.js"></script>
+
+    <footer class="text-center">
+        <i class="fa fa-copyright"></i><a target="_blank" href="https://github.com/viniciusandd">Vinicius Emanoel Andrade</a> - 2019
+    </footer>
+
 </body>
 </html>
