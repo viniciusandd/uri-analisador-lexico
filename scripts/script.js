@@ -142,7 +142,7 @@ function maquina_de_estados(elemento, backspace=false)
         try {
             g_proximo_estado = g_estados[g_proximo_estado][letra];
         } catch (error) {
-            g_proximo_estado = -1;
+            g_proximo_estado = g_proximo_estado;
         }
     }
 
