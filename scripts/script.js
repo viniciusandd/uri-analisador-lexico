@@ -27,7 +27,9 @@ function criar_alfabeto(tokens)
     {
         g_alfabeto.push(token);
         $('#alfabeto').append(
-            '<span class="badge badge-pill badge-primary palavras">'+token+'</span>'
+            '<span class="badge badge-pill badge-primary palavras">'
+            +token+
+            '</span>'
         );
     });    
 }
@@ -62,7 +64,7 @@ function identificar_estados_do_automato()
     }    
 }
 
-function desenhar_tabela(estado_atual=null, letra_atual=null) {
+function desenhar_tabela(estado_atual=null, letra_atual=null, proximo_estado=null) {
     var conteudo = '';
     conteudo += '<thead><tr>';
     conteudo += '<td>-</td>';
@@ -86,14 +88,17 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
         {
             var letra = String.fromCharCode(i);
             
-            var classe = 'nao-destacar';
+            var classe = '';
             if (h == estado_atual && letra == letra_atual)
-                classe = 'destacar';
+                classe = 'estado-atual';
+            
+            if (h == proximo_estado)
+                classe += 'proximo-estado'
 
             if(typeof g_estados[h][letra] !== 'undefined') {
                 conteudo += '<td class="'+classe+'">q'+ g_estados[h][letra] +'</td>';
             } else {
-                conteudo += '<td>-</td>';
+                conteudo += '<td class="'+classe+'">-</td>';
             }
         }
         conteudo += '</tr>';
@@ -154,7 +159,7 @@ function maquina_de_estados(elemento, backspace=false)
         eh_final = false;
     }
 
-    desenhar_tabela(estado_atual, letra);
+    desenhar_tabela(estado_atual, letra, g_proximo_estado);
     mostrar_validade_do_token(eh_final);
 }
 
@@ -165,7 +170,14 @@ document.getElementById('palavra').onkeyup = function(e)
         maquina_de_estados(event.target, backspace=true);
     if (key === 32)
     {
-        if (g_estados[g_proximo_estado]["final"])
+        var eh_final = false;
+        try {
+            eh_final = g_estados[g_proximo_estado]["final"];
+        } catch (error) {
+            eh_final = false;
+        }
+
+        if (eh_final)
             bootbox.alert("O token é valido!");
         else
             bootbox.alert("O token é invalido!");

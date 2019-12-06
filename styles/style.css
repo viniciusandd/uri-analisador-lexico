@@ -17,6 +17,10 @@
 
 }
 
-.destacar {
-    background-color: seagreen;
+.estado-atual {
+    background-color: green;
+}
+
+.proximo-estado {
+    background-color: lightgreen;
 }
