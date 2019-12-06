@@ -103,14 +103,24 @@ function desenhar_tabela(estado_atual=null, letra_atual=null) {
 
 var g_proximo_estado = 0;
 var g_estados_percorridos = [];
-function maquina_de_estados(elemento, backspace=false, space=false)
+var tamanho = 0;
+function maquina_de_estados(elemento, backspace=false)
 {
     var palavra = elemento.value;
+    
+    if (!backspace && palavra.length < tamanho) 
+    {
+        console.log('entrou');
+        tamanho = palavra.length;
+        return;        
+    }
+
+    tamanho = palavra.length;
     var letra = palavra[palavra.length-1];
     
     console.log(letra);
     console.log(backspace);
-    console.log(space);
+    // console.log(space);
 
     if (backspace)
     {
@@ -124,14 +134,14 @@ function maquina_de_estados(elemento, backspace=false, space=false)
             g_proximo_estado = 0;
         }
     }
-    else if (space)
-    {
-        if (g_estados[g_proximo_estado]["final"])
-            bootbox.alert("O token é valido!");
-        else
-        bootbox.alert("O token é invalido!");
-        reiniciar_variaveis();
-    }
+    // else if (space)
+    // {
+    //     if (g_estados[g_proximo_estado]["final"])
+    //         bootbox.alert("O token é valido!");
+    //     else
+    //     bootbox.alert("O token é invalido!");
+    //     reiniciar_variaveis();
+    // }
     else
     {
         g_estados_percorridos.push(g_proximo_estado);        
@@ -150,10 +160,6 @@ function maquina_de_estados(elemento, backspace=false, space=false)
         eh_final = false;
     }
 
-    // console.log('estado atual: ' + estado_atual);
-    // console.log('prox estado: ' + g_proximo_estado);
-    // console.log('eh final: ' + eh_final);
-
     desenhar_tabela(estado_atual, letra);
     mostrar_validade_do_token(eh_final);
 }
@@ -163,8 +169,8 @@ document.getElementById('palavra').onkeyup = function()
     var key = event.keyCode || event.charCode;
     if (key === 8)
         maquina_de_estados(event.target, backspace=true);
-    if (key === 32)
-        maquina_de_estados(event.target, space=true);
+    // if (key === 32)
+    //     maquina_de_estados(event.target, space=true);
 }
 
 function mostrar_validade_do_token(estado_final)
