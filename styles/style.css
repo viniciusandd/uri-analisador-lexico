@@ -11,6 +11,11 @@
 .palavras {
     margin-right: 5px;
     font-size: 15px;
+    padding: 10px;
+}
+
+.palavras i {
+    margin-left: 5px;
 }
 
 #alfabeto {

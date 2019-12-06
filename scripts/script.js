@@ -17,7 +17,9 @@ $('#token').keypress(function (e)
         criar_alfabeto(tokens);
         g_estados = [[]];
         identificar_estados_do_automato();
+        reiniciar_variaveis();
         desenhar_tabela();
+        $('#palavra').val('');
      }
 });
 
@@ -27,11 +29,23 @@ function criar_alfabeto(tokens)
     {
         g_alfabeto.push(token);
         $('#alfabeto').append(
-            '<span class="badge badge-pill badge-primary palavras">'
-            +token+
+            '<span id="span-'+token+'" class="badge badge-pill badge-primary palavras">'+            
+            token+
+            "<i onClick=remover_palavra_do_alfabeto('"+token+"'); class='fa fa-trash'></i>"+
             '</span>'
         );
     });    
+}
+
+function remover_palavra_do_alfabeto(token)
+{
+    g_alfabeto.splice( g_alfabeto.indexOf(token), 1 );
+    g_estados = [[]];
+    $('#span-'+token).remove();
+    identificar_estados_do_automato();
+    reiniciar_variaveis();
+    desenhar_tabela();
+    $('#palavra').val('');
 }
 
 function identificar_estados_do_automato()
@@ -64,7 +78,8 @@ function identificar_estados_do_automato()
     }    
 }
 
-function desenhar_tabela(estado_atual=null, letra_atual=null, proximo_estado=null) {
+function desenhar_tabela(estado_atual=null, letra_atual=null, proximo_estado=null) 
+{
     var conteudo = '';
     conteudo += '<thead><tr>';
     conteudo += '<td>-</td>';
